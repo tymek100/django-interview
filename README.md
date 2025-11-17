@@ -18,4 +18,6 @@ powershell -ExecutionPolicy ByPass -c "irm https://pdm-project.org/install-pdm.p
 
 ## Run the app
 ```
+pdm run python manage.py migrate
+pdm run python manage.py runserver
 ```
