@@ -21,3 +21,12 @@ powershell -ExecutionPolicy ByPass -c "irm https://pdm-project.org/install-pdm.p
 pdm run python manage.py migrate
 pdm run python manage.py runserver
 ```
+
+### Call the API
+```
+curl -X POST "http://127.0.0.1:8000/api/excel-summary/" \
+  -H "Accept: application/json" \
+  -F "file=@example.xlsx" \
+  -F "columns=CURRENT USD" \
+  -F "columns=CURRENT CAD"
+```
