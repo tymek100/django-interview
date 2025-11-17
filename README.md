@@ -27,6 +27,21 @@ pdm run python manage.py migrate
 pdm run python manage.py runserver
 ```
 
+## Build & Run with docker instead
+
+### Download Docker
+https://www.docker.com/
+
+### Build the image
+```
+docker build -t django-pdm-app .
+```
+### Run the container
+```
+docker run -p 8000:8000 django-pdm-app
+```
+
+
 ### Call the API
 1. Go to: http://127.0.0.1:8000/api/docs/
 2. Press 'Try it Out' under the 'Excel Upload' endpoint.
