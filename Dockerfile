@@ -30,5 +30,5 @@ RUN pdm run python manage.py migrate
 # Expose Django port
 EXPOSE 8000
 
-# Run Django migrations + server
+# Run Django server
 CMD ["pdm", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
