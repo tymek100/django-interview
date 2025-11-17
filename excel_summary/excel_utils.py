@@ -1,7 +1,4 @@
-# app_name/excel_utils.py (or services.py, etc.)
-
 from typing import Any, Dict, List, Optional, Tuple
-
 
 
 def detect_header_row(ws, requested_columns: List[str], max_header_search: int = 5):
