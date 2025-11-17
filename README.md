@@ -41,8 +41,7 @@ docker build -t django-pdm-app .
 docker run -p 8000:8000 django-pdm-app
 ```
 
-
-### Call the API
+## Call the API
 1. Go to: http://127.0.0.1:8000/api/docs/
 2. Press 'Try it Out' under the 'Excel Upload' endpoint.
 ![alt text](readme_images/image.png)
