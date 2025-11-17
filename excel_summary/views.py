@@ -6,7 +6,15 @@ from rest_framework import parsers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import ExcelSummaryRequestSerializer, ExcelSummaryResponseSerializer
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiResponse,
+)
+
+from .serializers import (
+    ExcelSummaryRequestSerializer,
+    ExcelSummaryResponseSerializer,
+)
 
 
 def normalize_header(header: Any) -> str:
@@ -63,7 +71,6 @@ class ExcelSummaryView(APIView):
     multipart/form-data:
         file: <Excel file>
         columns: <column name>   (can appear multiple times)
-        columns: <another column>
 
     Response:
     {
@@ -77,6 +84,22 @@ class ExcelSummaryView(APIView):
 
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
 
+    @extend_schema(
+        tags=["Excel"],
+        summary="Summarize numeric columns in an Excel file",
+        description=(
+            "Upload an Excel `.xlsx` file and provide a list of column header names.\n\n"
+            "The API will locate each column and return the sum and average of "
+            "all numeric values found in that column."
+        ),
+        request=ExcelSummaryRequestSerializer,
+        responses={
+            200: ExcelSummaryResponseSerializer,
+            400: OpenApiResponse(
+                description="Validation error or Excel parsing error."
+            ),
+        },
+    )
     def post(self, request, *args, **kwargs):
         request_serializer = ExcelSummaryRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)

@@ -23,10 +23,10 @@ pdm run python manage.py runserver
 ```
 
 ### Call the API
-```
-curl -X POST "http://127.0.0.1:8000/api/excel-summary/" \
-  -H "Accept: application/json" \
-  -F "file=@example.xlsx" \
-  -F "columns=CURRENT USD" \
-  -F "columns=CURRENT CAD"
-```
+1. Go to: http://127.0.0.1:8000/api/docs/
+2. Press 'Try it Out' under the Excel endpoint.
+![alt text](readme_images/image.png)
+3. Upload the file (1), provide column names (2) and click Execute (3).
+![alt text](readme_images/image2.png)
+
+

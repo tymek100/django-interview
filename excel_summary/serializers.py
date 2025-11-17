@@ -4,14 +4,17 @@ from rest_framework import serializers
 class ExcelSummaryRequestSerializer(serializers.Serializer):
     """
     Request payload for summarizing an uploaded Excel file.
-    - file: Excel file (.xlsx)
-    - columns: list of column header names to summarize
+
+    This is used as the request body schema for Swagger / OpenAPI.
     """
-    file = serializers.FileField()
+    file = serializers.FileField(
+        help_text="Excel file in .xlsx format."
+    )
     columns = serializers.ListField(
         child=serializers.CharField(),
         allow_empty=False,
-        help_text="List of column header names to summarize (e.g. ['CURRENT USD', 'CURRENT CAD'])",
+        help_text="List of column header names to summarize "
+                  "(e.g. ['CURRENT USD', 'CURRENT CAD']).",
     )
 
 
@@ -22,5 +25,8 @@ class ColumnSummarySerializer(serializers.Serializer):
 
 
 class ExcelSummaryResponseSerializer(serializers.Serializer):
+    """
+    Response payload containing per-column sum and average.
+    """
     file = serializers.CharField()
     summary = ColumnSummarySerializer(many=True)
