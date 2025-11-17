@@ -1,0 +1,21 @@
+# DJANGO interview task
+
+## Dependencies
+
+### Python
+- For Linux / Mac it should be preinstalled.
+- For Windows you can download it here: https://www.python.org/downloads/windows/
+
+### PDM
+Mac / Linux:
+```
+curl -sSL https://pdm-project.org/install-pdm.py | python3 -
+```
+Windows:
+```
+powershell -ExecutionPolicy ByPass -c "irm https://pdm-project.org/install-pdm.py | py -"
+```
+
+## Run the app
+```
+```
