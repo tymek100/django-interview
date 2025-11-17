@@ -11,8 +11,9 @@ class ExcelSummaryRequestSerializer(serializers.Serializer):
         help_text="Excel file in .xlsx format."
     )
     columns = serializers.CharField(
+        default=["CURRENT USD", "CURRENT CAD"],
         help_text="List of column header names to summarize in Python-style list"
-                  "(e.g. ['CURRENT USD', 'CURRENT CAD']).",
+                  "e.g.: ['CURRENT USD', 'CURRENT CAD']",
     )
 
 
