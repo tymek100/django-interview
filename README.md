@@ -24,7 +24,7 @@ pdm run python manage.py runserver
 
 ### Call the API
 1. Go to: http://127.0.0.1:8000/api/docs/
-2. Press 'Try it Out' under the Excel endpoint.
+2. Press 'Try it Out' under the 'Excel Upload' endpoint.
 ![alt text](readme_images/image.png)
 3. Upload the file (1), provide column names (2) and click Execute (3).
 ![alt text](readme_images/image2.png)

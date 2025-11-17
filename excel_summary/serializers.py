@@ -10,10 +10,8 @@ class ExcelSummaryRequestSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text="Excel file in .xlsx format."
     )
-    columns = serializers.ListField(
-        child=serializers.CharField(),
-        allow_empty=False,
-        help_text="List of column header names to summarize "
+    columns = serializers.CharField(
+        help_text="List of column header names to summarize in Python-style list"
                   "(e.g. ['CURRENT USD', 'CURRENT CAD']).",
     )
 

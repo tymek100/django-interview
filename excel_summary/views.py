@@ -1,4 +1,5 @@
 import io
+import ast
 from typing import Any, Dict, List, Optional
 
 from openpyxl import load_workbook
@@ -15,6 +16,56 @@ from .serializers import (
     ExcelSummaryRequestSerializer,
     ExcelSummaryResponseSerializer,
 )
+
+
+def detect_header_row(ws, requested_columns: List[str], max_header_search: int = 5):
+    """
+    Try to detect which row contains the headers by matching requested column
+    names against the first `max_header_search` rows.
+
+    Returns: (row_index, row_values) or (None, None) if nothing found.
+    """
+    requested_norm = [normalize_header(c) for c in requested_columns]
+
+    best_row_idx: Optional[int] = None
+    best_match_count = 0
+    best_row_values = None
+
+    # 1) Try to find the row where most requested column names appear
+    for idx, row in enumerate(
+        ws.iter_rows(min_row=1, max_row=max_header_search, values_only=True),
+        start=1,
+    ):
+        if not any(cell not in (None, "") for cell in row):
+            # skip completely empty rows
+            continue
+
+        header_map = {
+            normalize_header(cell): col_idx
+            for col_idx, cell in enumerate(row)
+            if normalize_header(cell)
+        }
+
+        match_count = sum(1 for c in requested_norm if c in header_map)
+
+        if match_count > best_match_count:
+            best_match_count = match_count
+            best_row_idx = idx
+            best_row_values = row
+
+    if best_row_idx is not None and best_match_count > 0:
+        # Found a row that matches at least one requested column
+        return best_row_idx, best_row_values
+
+    # 2) Fallback: first non-empty row
+    for idx, row in enumerate(
+        ws.iter_rows(min_row=1, max_row=max_header_search, values_only=True),
+        start=1,
+    ):
+        if any(cell not in (None, "") for cell in row):
+            return idx, row
+
+    return None, None
 
 
 def normalize_header(header: Any) -> str:
@@ -85,7 +136,7 @@ class ExcelSummaryView(APIView):
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
 
     @extend_schema(
-        tags=["Excel"],
+        tags=["Excel Upload"],
         summary="Summarize numeric columns in an Excel file",
         description=(
             "Upload an Excel `.xlsx` file and provide a list of column header names.\n\n"
@@ -105,7 +156,7 @@ class ExcelSummaryView(APIView):
         request_serializer.is_valid(raise_exception=True)
 
         uploaded_file = request_serializer.validated_data["file"]
-        columns: List[str] = request_serializer.validated_data["columns"]
+        columns = ast.literal_eval(request_serializer.validated_data["columns"])
 
         # Read workbook from in-memory bytes
         try:
@@ -119,14 +170,14 @@ class ExcelSummaryView(APIView):
 
         ws = wb.active  # use first sheet
 
-        # Find header row: first non-empty row
-        header_row_index = None
-        header_row_values = None
-        for idx, row in enumerate(ws.iter_rows(min_row=1, max_row=20, values_only=True), start=1):
-            if any(cell not in (None, "") for cell in row):
-                header_row_index = idx
-                header_row_values = row
-                break
+        # Find header row based on requested column names
+        header_row_index, header_row_values = detect_header_row(ws, columns)
+
+        if header_row_index is None or header_row_values is None:
+            return Response(
+                {"detail": "Could not detect header row in the Excel sheet."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if header_row_index is None or header_row_values is None:
             return Response(
@@ -204,7 +255,6 @@ class ExcelSummaryView(APIView):
             "summary": requested_summaries,
         }
 
-        # Optional: validate response format with a serializer (nice for docs / schema)
         response_serializer = ExcelSummaryResponseSerializer(data=response_data)
         response_serializer.is_valid(raise_exception=True)
 
